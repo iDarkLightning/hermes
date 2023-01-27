@@ -21,6 +21,7 @@ type Inputs = {
 const Compose: NextPage = () => {
   const submit = api.sendEmail.useMutation();
   const getTemplatesQuery = api.getTemplates.useQuery();
+  const templateQuery = api.getTemplateByName.useMutation();
 
   const templates = getTemplatesQuery.data;
 
@@ -28,20 +29,27 @@ const Compose: NextPage = () => {
 
   const { register, handleSubmit } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    const templateQuery = api.getTemplateByName.useQuery({
-      name: data.template,
-    });
-    const template = await templateQuery.data;
+    const template = await templateQuery.mutateAsync({ name: data.template });
 
-    if (template?.fstring)
+    if (template?.fstring) {
+      const message = template?.fstring
+        .replace("{personName}", data.personName ?? data.companyName)
+        .replaceAll(
+          /{(.+?)}/g,
+          (_, key: string) => data[key.trim() as keyof Inputs] ?? ""
+        );
+
       submit.mutateAsync({
         to: data.email,
-        cc: "team@techcodes.org",
+        // cc: "team@techcodes.org",
         subject: template?.subject ?? "TechCodes Inquiry",
-        text: template?.fstring,
+        text: "",
+        html: message,
       });
-    null;
+    }
   };
+
+  console.log("{name} hi");
 
   return (
     <>

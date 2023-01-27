@@ -61,7 +61,7 @@ export const appRouter = createTRPCRouter({
         name: z.string(),
       })
     )
-    .query(async ({ input, ctx }) => {
+    .mutation(async ({ input, ctx }) => {
       const template = await ctx.prisma.template.findUnique({
         where: { name: input.name },
       });

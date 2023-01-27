@@ -18,7 +18,7 @@ model Example {
 }
 
 model Template {
-  fstring String
+  fstring String @db.LongText
   subject String
   name String @id
 }

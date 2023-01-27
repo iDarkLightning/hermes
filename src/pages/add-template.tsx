@@ -22,12 +22,7 @@ const AddTemplate: NextPage = () => {
 
   const { data: sessionData } = useSession();
 
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm<Inputs>();
+  const { register, handleSubmit } = useForm<Inputs>();
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     if (!templates?.map((t) => t.name).includes(data.name))
@@ -67,11 +62,20 @@ const AddTemplate: NextPage = () => {
           </div>
           <div className="flex flex-row">
             <p className="">Template:</p>
-            <input
+            <textarea
               className="ml-2 border-2 border-solid border-white bg-transparent"
               {...register("fstring", { required: true })}
             />
           </div>
+          <p>{`{writer}: Your name, the writer of this email`}</p>
+          <p>
+            {`{position}: Your position, Sponsorship representative or director`}
+          </p>
+          <p>{`{companyName}: Name of the company you are emailing`}</p>
+          <p>
+            {`{personName}: optional, if you have a specific person's name`}
+          </p>
+          <p>Make sure its in html</p>
 
           <input type="submit" />
         </form>
