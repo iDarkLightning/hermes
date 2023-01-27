@@ -17,6 +17,12 @@ model Example {
     updatedAt DateTime @updatedAt
 }
 
+model Template {
+  fstring String
+  subject String
+  name String @id
+}
+
 // Necessary for Next auth
 model Account {
     id                String  @id @default(cuid())

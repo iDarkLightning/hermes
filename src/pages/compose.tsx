@@ -4,11 +4,6 @@ import Head from "next/head";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { api } from "../utils/api";
 
-enum Template {
-  SPONSORSHIP,
-  VENUE,
-}
-
 enum Position {
   DIRECTOR = "the Director of Sponsorships",
   REP = "a sponsorship representative",
@@ -20,26 +15,37 @@ type Inputs = {
   companyName: string;
   personName?: string;
   email: string;
-  template: Template;
+  template: string;
 };
 
 const Compose: NextPage = () => {
+  const submit = api.sendEmail.useMutation();
+  const getTemplatesQuery = api.getTemplates.useQuery();
+
+  const templates = getTemplatesQuery.data;
+
   const { data: sessionData } = useSession();
 
-  const submit = api.sendEmail.useMutation();
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
   } = useForm<Inputs>();
-  const onSubmit: SubmitHandler<Inputs> = (data) => {
-    submit.mutateAsync({
-      to: data.email,
-      cc: "team@techcodes.org",
-      subject: "Test Email",
-      text: "This is a test email",
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    const templateQuery = api.getTemplateByName.useQuery({
+      name: data.template,
     });
+    const template = await templateQuery.data;
+
+    if (template?.fstring)
+      // submit.mutateAsync({
+      //   to: data.email,
+      //   cc: "team@techcodes.org",
+      //   subject: template?.subject ?? "TechCodes Inquiry",
+      //   text: template?.fstring,
+      // });
+      null;
   };
 
   console.log(watch("template"));
@@ -104,11 +110,14 @@ const Compose: NextPage = () => {
             <p>Your Name:</p>
             <select
               className="ml-2 border-2 border-solid border-white bg-transparent"
-              defaultValue={Template.SPONSORSHIP}
+              defaultValue={"sponsorship"}
               {...register("template", { required: true })}
             >
-              <option value={Template.SPONSORSHIP}>Sponsorship</option>
-              <option value={Template.VENUE}>Venue</option>
+              {templates?.map((template, i) => (
+                <option value={template.name} key={i}>
+                  {template.name}
+                </option>
+              ))}
             </select>
           </div>
 

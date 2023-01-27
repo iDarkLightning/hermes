@@ -50,6 +50,24 @@ export const appRouter = createTRPCRouter({
         html: input.html,
       });
     }),
+  getTemplates: protectedProcedure.query(async ({ ctx }) => {
+    const templates = await ctx.prisma.template.findMany();
+
+    return templates;
+  }),
+  getTemplateByName: protectedProcedure
+    .input(
+      z.object({
+        name: z.string(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const template = await ctx.prisma.template.findUnique({
+        where: { name: input.name },
+      });
+
+      return template;
+    }),
 });
 
 // export type definition of API
