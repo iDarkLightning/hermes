@@ -13,6 +13,7 @@ export const appRouter = createTRPCRouter({
     .input(
       z.object({
         to: z.string().email(),
+        cc: z.string().email(),
         subject: z.string(),
         text: z.string(),
         html: z.string().optional(),
@@ -43,6 +44,7 @@ export const appRouter = createTRPCRouter({
       await transport.sendMail({
         from: `${ctx.session.user.name} <${ctx.session.user.email}>`,
         to: input.to,
+        cc: input.cc,
         subject: input.subject,
         text: input.text,
         html: input.html,

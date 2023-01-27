@@ -2,6 +2,7 @@ import type { NextPage } from "next";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { useForm, type SubmitHandler } from "react-hook-form";
+import { api } from "../utils/api";
 
 enum Template {
   SPONSORSHIP,
@@ -18,18 +19,28 @@ type Inputs = {
   position: Position;
   companyName: string;
   personName?: string;
+  email: string;
   template: Template;
 };
 
 const Compose: NextPage = () => {
   const { data: sessionData } = useSession();
+
+  const submit = api.sendEmail.useMutation();
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
   } = useForm<Inputs>();
-  const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data);
+  const onSubmit: SubmitHandler<Inputs> = (data) => {
+    submit.mutateAsync({
+      to: data.email,
+      cc: "team@techcodes.org",
+      subject: "Test Email",
+      text: "This is a test email",
+    });
+  };
 
   console.log(watch("template"));
   return (
@@ -69,6 +80,17 @@ const Compose: NextPage = () => {
             <input
               className="ml-2 border-2 border-solid border-white bg-transparent"
               {...register("companyName", { required: true })}
+            />
+          </div>
+          <div className="flex flex-row">
+            <p>Email:</p>
+            <input
+              className="ml-2 border-2 border-solid border-white bg-transparent"
+              {...register("email", {
+                required: true,
+                pattern:
+                  /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/,
+              })}
             />
           </div>
           <div className="flex flex-row">
