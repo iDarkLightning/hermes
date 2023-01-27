@@ -10,12 +10,12 @@ enum Position {
 }
 
 type Inputs = {
-  writer: string;
-  position: Position;
-  companyName: string;
-  personName?: string;
-  email: string;
-  template: string;
+  writer: string; // Formatting
+  position: Position; // Formatting
+  companyName: string; // Formatting
+  personName?: string; // Formatting
+  email: string; // Email Send
+  template: string; // To be formatted
 };
 
 const Compose: NextPage = () => {
@@ -26,12 +26,7 @@ const Compose: NextPage = () => {
 
   const { data: sessionData } = useSession();
 
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm<Inputs>();
+  const { register, handleSubmit } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     const templateQuery = api.getTemplateByName.useQuery({
       name: data.template,
@@ -39,16 +34,15 @@ const Compose: NextPage = () => {
     const template = await templateQuery.data;
 
     if (template?.fstring)
-      // submit.mutateAsync({
-      //   to: data.email,
-      //   cc: "team@techcodes.org",
-      //   subject: template?.subject ?? "TechCodes Inquiry",
-      //   text: template?.fstring,
-      // });
-      null;
+      submit.mutateAsync({
+        to: data.email,
+        cc: "team@techcodes.org",
+        subject: template?.subject ?? "TechCodes Inquiry",
+        text: template?.fstring,
+      });
+    null;
   };
 
-  console.log(watch("template"));
   return (
     <>
       <Head>
@@ -107,7 +101,7 @@ const Compose: NextPage = () => {
             />
           </div>
           <div className="flex flex-row">
-            <p>Your Name:</p>
+            <p>Template:</p>
             <select
               className="ml-2 border-2 border-solid border-white bg-transparent"
               defaultValue={"sponsorship"}

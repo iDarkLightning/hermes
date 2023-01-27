@@ -13,7 +13,7 @@ export const appRouter = createTRPCRouter({
     .input(
       z.object({
         to: z.string().email(),
-        cc: z.string().email(),
+        cc: z.string().email().optional(),
         subject: z.string(),
         text: z.string(),
         html: z.string().optional(),
@@ -67,6 +67,19 @@ export const appRouter = createTRPCRouter({
       });
 
       return template;
+    }),
+  makeTemplate: protectedProcedure
+    .input(
+      z.object({
+        fstring: z.string(),
+        subject: z.string(),
+        name: z.string(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      await ctx.prisma.template.create({
+        data: input,
+      });
     }),
 });
 
