@@ -47,10 +47,9 @@ const Compose: React.FC = () => {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm<Inputs>();
-  console.log(watch("companyName"));
+
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     const template = await templateQuery.mutateAsync({ name: data.template });
 
@@ -91,10 +90,6 @@ const Compose: React.FC = () => {
       />
       <Input
         label="Company Name:"
-        {...register("companyName", { required: true })}
-      />
-      <input
-        className="mt-2 mb-4 w-full rounded-md border-2 border-solid border-zinc-300 bg-transparent p-1 outline-none"
         {...register("companyName", { required: true })}
       />
       <Input
