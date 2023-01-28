@@ -1,6 +1,7 @@
 import { useSession } from "next-auth/react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { api } from "@utils/api";
+import { Input, Select } from "./input";
 
 enum Position {
   DIRECTOR = "the Director of Sponsorships",
@@ -53,64 +54,46 @@ const Compose: React.FC = () => {
       className="flex flex-col items-end  gap-3 text-white"
     >
       {/* register your input into the hook by invoking the "register" function */}
-      <div className="flex flex-row">
-        <p className="">Your Name:</p>
-        <input
-          className="ml-2 border-2 border-solid border-white bg-transparent"
-          defaultValue={sessionData?.user?.name ?? ""}
-          {...register("writer", { required: true })}
-        />
-      </div>
-      <div className="flex flex-row">
-        <p>Your Position:</p>
-        <select
-          className="ml-2 border-2 border-solid border-white bg-transparent"
-          defaultValue={Position.REP}
-          {...register("position", { required: true })}
-        >
-          <option value={Position.REP}>Representative</option>
-          <option value={Position.DIRECTOR}>Director</option>
-        </select>
-      </div>
-      <div className="flex flex-row">
-        <p>Company Name:</p>
-        <input
-          className="ml-2 border-2 border-solid border-white bg-transparent"
-          {...register("companyName", { required: true })}
-        />
-      </div>
-      <div className="flex flex-row">
-        <p>Email:</p>
-        <input
-          className="ml-2 border-2 border-solid border-white bg-transparent"
-          {...register("email", {
-            required: true,
-            pattern:
-              /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/,
-          })}
-        />
-      </div>
-      <div className="flex flex-row">
-        <p>Person&apos;s name (if applicable):</p>
-        <input
-          className="ml-2 border-2 border-solid border-white bg-transparent"
-          {...register("personName")}
-        />
-      </div>
-      <div className="flex flex-row">
-        <p>Template:</p>
-        <select
-          className="ml-2 border-2 border-solid border-white bg-transparent"
-          defaultValue={"sponsorship"}
-          {...register("template", { required: true })}
-        >
-          {templates?.map((template, i) => (
-            <option value={template.name} key={i}>
-              {template.name}
-            </option>
-          ))}
-        </select>
-      </div>
+      <Input
+        label="Your Name: "
+        defaultValue={sessionData?.user?.name ?? ""}
+        {...register("writer", { required: true })}
+      />
+      <Select
+        label="Your Position:"
+        defaultValue={Position.REP}
+        {...register("position", { required: true })}
+      >
+        <option value={Position.REP}>Representative</option>
+        <option value={Position.DIRECTOR}>Director</option>
+      </Select>
+      <Input
+        label="Company Name:"
+        {...register("companyName", { required: true })}
+      />
+      <Input
+        label="Email:"
+        {...register("email", {
+          required: true,
+          pattern:
+            /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/,
+        })}
+      />
+      <Input
+        label="Person's name (if applicable:"
+        {...register("personName")}
+      />
+      <Select
+        label="Template:"
+        defaultValue={"sponsorship"}
+        {...register("template", { required: true })}
+      >
+        {templates?.map((template, i) => (
+          <option value={template.name} key={i}>
+            {template.name}
+          </option>
+        ))}
+      </Select>
 
       <input type="submit" />
     </form>
