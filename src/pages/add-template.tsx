@@ -1,7 +1,7 @@
 import type { NextPage } from "next";
 import { useForm, type SubmitHandler } from "react-hook-form";
-import { api } from "../utils/api";
-import Layout from "../components/layout";
+import { api } from "@utils/api";
+import Layout from "@components/layout";
 
 type Inputs = {
   fstring: string;

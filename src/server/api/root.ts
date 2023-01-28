@@ -1,4 +1,4 @@
-import { env } from "../../env/server.mjs";
+import { env } from "@env/server.mjs";
 import { createTRPCRouter, protectedProcedure } from "./trpc";
 import nodemailer from "nodemailer";
 import { z } from "zod";
