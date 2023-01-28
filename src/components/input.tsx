@@ -14,7 +14,7 @@ export const Input: React.FC<InputProps> = ({ label, ...rest }) => {
     <div className="flex flex-row">
       <p>{label}</p>
       <input
-        className="ml-2 rounded border-2 border-solid border-white bg-transparent"
+        className="ml-2 rounded border-2 border-solid border-zinc-300 bg-transparent"
         {...rest}
       />
     </div>
@@ -30,7 +30,7 @@ export const Select: React.FC<React.PropsWithChildren<SelectProps>> = ({
     <div className="flex flex-row">
       <p>{label}</p>
       <select
-        className="ml-2 rounded border-2 border-solid border-white bg-transparent"
+        className="ml-2 rounded border-2 border-solid border-zinc-300 bg-transparent"
         {...rest}
       >
         {children}

@@ -29,27 +29,27 @@ const AddTemplate: NextPage = () => {
     <Layout>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col items-end  gap-3 text-white"
+        className="flex flex-col items-end  gap-3 text-zinc-300"
       >
         {/* register your input into the hook by invoking the "register" function */}
         <div className="flex flex-row">
           <p className="">Template Name:</p>
           <input
-            className="ml-2 border-2 border-solid border-white bg-transparent"
+            className="ml-2 border-2 border-solid border-zinc-300 bg-transparent"
             {...register("name", { required: true })}
           />
         </div>
         <div className="flex flex-row">
           <p className="">Subject Line:</p>
           <input
-            className="ml-2 border-2 border-solid border-white bg-transparent"
+            className="ml-2 border-2 border-solid border-zinc-300 bg-transparent"
             {...register("subject", { required: true })}
           />
         </div>
         <div className="flex flex-row">
           <p className="">Template:</p>
           <textarea
-            className="ml-2 border-2 border-solid border-white bg-transparent"
+            className="ml-2 border-2 border-solid border-zinc-300 bg-transparent"
             {...register("fstring", { required: true })}
           />
         </div>

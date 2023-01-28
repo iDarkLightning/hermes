@@ -51,9 +51,10 @@ const Compose: React.FC = () => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="flex flex-col items-end  gap-3 text-white"
+      className="w-60vw flex w-3/5 flex-col items-end gap-3 text-zinc-300"
     >
-      {/* register your input into the hook by invoking the "register" function */}
+      <h2 className="w-full text-left text-2xl">Compose an email:</h2>
+      <hr className="w-full border" />
       <Input
         label="Your Name: "
         defaultValue={sessionData?.user?.name ?? ""}
