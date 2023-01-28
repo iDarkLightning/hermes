@@ -11,10 +11,10 @@ interface SelectProps extends InputHTMLAttributes<HTMLSelectElement> {
 
 export const Input: React.FC<InputProps> = ({ label, ...rest }) => {
   return (
-    <div className="flex flex-row">
+    <div className="flex w-full flex-col">
       <p>{label}</p>
       <input
-        className="ml-2 rounded border-2 border-solid border-zinc-300 bg-transparent"
+        className="mt-2 mb-4 w-full rounded-md border-2 border-solid border-zinc-300 bg-transparent p-1 outline-none"
         {...rest}
       />
     </div>
@@ -27,10 +27,10 @@ export const Select: React.FC<React.PropsWithChildren<SelectProps>> = ({
   ...rest
 }) => {
   return (
-    <div className="flex flex-row">
+    <div className="flex w-full flex-col">
       <p>{label}</p>
       <select
-        className="ml-2 rounded border-2 border-solid border-zinc-300 bg-transparent"
+        className="mt-2 mb-4 w-full rounded-md border-2 border-solid border-zinc-300 bg-transparent p-1 outline-none"
         {...rest}
       >
         {children}

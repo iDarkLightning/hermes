@@ -2,6 +2,7 @@ import { useSession } from "next-auth/react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { api } from "@utils/api";
 import { Input, Select } from "./input";
+import { useState } from "react";
 
 enum Position {
   DIRECTOR = "the Director of Sponsorships",
@@ -17,8 +18,23 @@ type Inputs = {
   template: string; // To be formatted
 };
 
+enum ButtonState {
+  NORM = "Submit",
+  ERR = "Error! Check console for more info!",
+  SUCCESS = "Sent Successfully!!",
+}
+
 const Compose: React.FC = () => {
-  const submit = api.sendEmail.useMutation();
+  const submit = api.sendEmail.useMutation({
+    onError() {
+      setButtonState(ButtonState.ERR);
+      setTimeout(() => setButtonState(ButtonState.NORM), 3000);
+    },
+    onSuccess() {
+      setButtonState(ButtonState.SUCCESS);
+      setTimeout(() => setButtonState(ButtonState.NORM), 3000);
+    },
+  });
   const getTemplatesQuery = api.getTemplates.useQuery();
   const templateQuery = api.getTemplateByName.useMutation();
 
@@ -26,7 +42,15 @@ const Compose: React.FC = () => {
 
   const { data: sessionData } = useSession();
 
-  const { register, handleSubmit } = useForm<Inputs>();
+  const [buttonState, setButtonState] = useState(ButtonState.NORM);
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<Inputs>();
+  console.log(watch("companyName"));
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     const template = await templateQuery.mutateAsync({ name: data.template });
 
@@ -51,10 +75,35 @@ const Compose: React.FC = () => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="w-60vw flex w-3/5 flex-col items-end gap-3 text-zinc-300"
+      className="w-60vw flex w-3/5 w-full flex-col items-start gap-3 text-zinc-300"
+      autoComplete="off"
     >
       <h2 className="w-full text-left text-2xl">Compose an email:</h2>
-      <hr className="w-full border" />
+      <hr className="w-full border border-zinc-300/20" />
+
+      <Input
+        label="Email:"
+        {...register("email", {
+          required: true,
+          pattern:
+            /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/,
+        })}
+      />
+      <Input
+        label="Company Name:"
+        {...register("companyName", { required: true })}
+      />
+      <input
+        className="mt-2 mb-4 w-full rounded-md border-2 border-solid border-zinc-300 bg-transparent p-1 outline-none"
+        {...register("companyName", { required: true })}
+      />
+      <Input
+        label="Person's name (if applicable:"
+        {...register("personName")}
+      />
+
+      <hr className="w-full border border-zinc-300/20" />
+
       <Input
         label="Your Name: "
         defaultValue={sessionData?.user?.name ?? ""}
@@ -68,22 +117,7 @@ const Compose: React.FC = () => {
         <option value={Position.REP}>Representative</option>
         <option value={Position.DIRECTOR}>Director</option>
       </Select>
-      <Input
-        label="Company Name:"
-        {...register("companyName", { required: true })}
-      />
-      <Input
-        label="Email:"
-        {...register("email", {
-          required: true,
-          pattern:
-            /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/,
-        })}
-      />
-      <Input
-        label="Person's name (if applicable:"
-        {...register("personName")}
-      />
+
       <Select
         label="Template:"
         defaultValue={"sponsorship"}
@@ -95,8 +129,13 @@ const Compose: React.FC = () => {
           </option>
         ))}
       </Select>
+      <hr className="w-full border border-zinc-300/20" />
 
-      <input type="submit" />
+      <input
+        type="submit"
+        className="w-full rounded-md bg-zinc-300 py-1 text-lg text-zinc-800"
+        value={buttonState}
+      />
     </form>
   );
 };
