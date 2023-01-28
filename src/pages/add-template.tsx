@@ -1,13 +1,7 @@
 import type { NextPage } from "next";
-import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { api } from "../utils/api";
-
-enum Position {
-  DIRECTOR = "the Director of Sponsorships",
-  REP = "a sponsorship representative",
-}
 
 type Inputs = {
   fstring: string;
@@ -19,8 +13,6 @@ const AddTemplate: NextPage = () => {
   const create = api.makeTemplate.useMutation();
   const getTemplatesQuery = api.getTemplates.useQuery();
   const templates = getTemplatesQuery.data;
-
-  const { data: sessionData } = useSession();
 
   const { register, handleSubmit } = useForm<Inputs>();
 
