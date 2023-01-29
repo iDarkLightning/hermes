@@ -3,6 +3,8 @@ import { useForm, type SubmitHandler } from "react-hook-form";
 import { api } from "@utils/api";
 import { Input, Select } from "./input";
 import { useState } from "react";
+import FormError from "./form-error";
+import { ErrorMessage } from "@hookform/error-message";
 
 enum Position {
   DIRECTOR = "the Director of Sponsorships",
@@ -47,10 +49,21 @@ const Compose: React.FC = () => {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
-  } = useForm<Inputs>();
+  } = useForm<Inputs>({
+    criteriaMode: "all",
+    defaultValues: {
+      personName: sessionData?.user?.name ?? "",
+      position: Position.REP,
+      template: "sponsor",
+    },
+  });
+
+  console.log(watch("companyName"));
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    console.log(errors);
     const template = await templateQuery.mutateAsync({ name: data.template });
 
     if (template?.fstring) {
@@ -74,7 +87,7 @@ const Compose: React.FC = () => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="w-60vw flex w-3/5 w-full flex-col items-start gap-3 text-zinc-300"
+      className=" flex w-3/5  flex-col items-start gap-3 pb-20 text-zinc-300"
       autoComplete="off"
     >
       <h2 className="w-full text-left text-2xl">Compose an email:</h2>
@@ -82,18 +95,27 @@ const Compose: React.FC = () => {
 
       <Input
         label="Email:"
+        errors={errors}
         {...register("email", {
           required: true,
-          pattern:
-            /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/,
+          pattern: {
+            value:
+              /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/,
+            message: "Must be a valid email address.",
+          },
+        })}
+      />
+
+      <Input
+        label="Company Name:"
+        errors={errors}
+        {...register("companyName", {
+          required: "Must provide a company name",
         })}
       />
       <Input
-        label="Company Name:"
-        {...register("companyName", { required: true })}
-      />
-      <Input
         label="Person's name (if applicable:"
+        errors={errors}
         {...register("personName")}
       />
 
@@ -101,11 +123,13 @@ const Compose: React.FC = () => {
 
       <Input
         label="Your Name: "
+        errors={errors}
         defaultValue={sessionData?.user?.name ?? ""}
-        {...register("writer", { required: true })}
+        {...register("writer", { required: "What's your name?" })}
       />
       <Select
         label="Your Position:"
+        errors={errors}
         defaultValue={Position.REP}
         {...register("position", { required: true })}
       >
@@ -115,7 +139,8 @@ const Compose: React.FC = () => {
 
       <Select
         label="Template:"
-        defaultValue={"sponsorship"}
+        errors={errors}
+        defaultValue={"sponsor"}
         {...register("template", { required: true })}
       >
         {templates?.map((template, i) => (
@@ -128,7 +153,7 @@ const Compose: React.FC = () => {
 
       <input
         type="submit"
-        className="w-full rounded-md bg-zinc-300 py-1 text-lg text-zinc-800"
+        className="mt-5 w-full rounded-md bg-zinc-300 py-1 text-lg text-zinc-800"
         value={buttonState}
       />
     </form>

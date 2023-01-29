@@ -10,6 +10,7 @@ const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
         <title>Hermes</title>
         <meta name="description" content="Emailing made Lazy" />
         <link rel="icon" href="/favicon.ico" />
+        <meta name="theme-color" content="rgb(39, 39, 42)" />
       </Head>
       <main className="align-center flex min-h-screen flex-col items-center  bg-zinc-800 pt-20">
         <div className="absolute top-0 flex h-16 w-screen items-center justify-between self-start border-b border-zinc-300/20 px-4">
