@@ -44,7 +44,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
 Input.displayName = "Input";
 
-export const TextField = React.forwardRef<HTMLTextAreaElement, TextFieldProps>(
+export const Textarea = React.forwardRef<HTMLTextAreaElement, TextFieldProps>(
   ({ label, errors, optional = false, name, ...rest }, ref) => {
     console.log(rest);
     return (
@@ -54,7 +54,7 @@ export const TextField = React.forwardRef<HTMLTextAreaElement, TextFieldProps>(
           {!optional && <span className="font-bold text-red-400"> *</span>}
         </p>
         <textarea
-          className="mt-2 mb-2 w-full rounded-md border-2 border-solid border-zinc-300 bg-transparent p-1 outline-none"
+          className="mt-2 mb-2 h-96 w-full rounded-md border-2 border-solid border-zinc-300 bg-transparent p-1 outline-none"
           ref={ref}
           name={name}
           {...rest}
@@ -65,7 +65,7 @@ export const TextField = React.forwardRef<HTMLTextAreaElement, TextFieldProps>(
   }
 );
 
-TextField.displayName = "TextField";
+Textarea.displayName = "TextField";
 
 export const Select = React.forwardRef<
   HTMLSelectElement,

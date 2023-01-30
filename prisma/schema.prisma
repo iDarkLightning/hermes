@@ -20,7 +20,7 @@ model Example {
 model Template {
   fstring String @db.LongText
   subject String
-  name String @id
+  name    String @id
 }
 
 // Necessary for Next auth

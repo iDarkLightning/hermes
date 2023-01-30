@@ -50,24 +50,27 @@ export const appRouter = createTRPCRouter({
         html: input.html,
       });
     }),
+
   getTemplates: protectedProcedure.query(async ({ ctx }) => {
     const templates = await ctx.prisma.template.findMany();
 
     return templates;
   }),
+
   getTemplateByName: protectedProcedure
     .input(
       z.object({
         name: z.string(),
       })
     )
-    .mutation(async ({ input, ctx }) => {
+    .query(async ({ input, ctx }) => {
       const template = await ctx.prisma.template.findUnique({
         where: { name: input.name },
       });
 
       return template;
     }),
+
   makeTemplate: protectedProcedure
     .input(
       z.object({
@@ -79,6 +82,24 @@ export const appRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       await ctx.prisma.template.create({
         data: input,
+      });
+    }),
+
+  editTemplate: protectedProcedure
+    .input(
+      z.object({
+        name: z.string(),
+        subject: z.string(),
+        fstring: z.string(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      await ctx.prisma.template.update({
+        where: { name: input.name },
+        data: {
+          fstring: input.fstring,
+          subject: input.subject,
+        },
       });
     }),
 });

@@ -40,7 +40,7 @@ const Home: NextPage = () => {
     },
   });
   const getTemplatesQuery = api.getTemplates.useQuery();
-  const templateQuery = api.getTemplateByName.useMutation();
+  const trpcContext = api.useContext();
 
   const templates = getTemplatesQuery.data;
 
@@ -72,7 +72,9 @@ const Home: NextPage = () => {
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     console.log("Submit");
-    const template = await templateQuery.mutateAsync({ name: data.template });
+    const template = await trpcContext.getTemplateByName.fetch({
+      name: data.template,
+    });
 
     if (template?.fstring) {
       const message = template?.fstring

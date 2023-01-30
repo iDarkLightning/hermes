@@ -26,6 +26,7 @@ const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
           <div className="flex flex-1 justify-evenly">
             <Tab name="Compose" path="/" />
             <Tab name="New Template" path="/add-template" />
+            <Tab name="Edit Template" path="/edit-template" />
           </div>
 
           <div className="flex flex-1 justify-end">
