@@ -9,6 +9,13 @@ import { prisma } from "@server/db";
 export const authOptions: NextAuthOptions = {
   // Include user.id on session
   callbacks: {
+    signIn({ profile }) {
+      if (!profile || !profile.email) return false;
+
+      if (!profile.email.endsWith("@techcodes.org")) return "/lame";
+
+      return true;
+    },
     session({ session, user }) {
       if (session.user) {
         session.user.id = user.id;
