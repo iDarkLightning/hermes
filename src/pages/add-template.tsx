@@ -2,6 +2,8 @@ import type { NextPage } from "next";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { api } from "@utils/api";
 import Layout from "@components/layout";
+import { Input } from "@components/input";
+import { useState } from "react";
 
 type Inputs = {
   fstring: string;
@@ -9,12 +11,33 @@ type Inputs = {
   name: string;
 };
 
+enum ButtonState {
+  NORM = "Create",
+  ERR = "Error! Check console for more info!",
+  SUCCESS = "Created Successfully!",
+}
+
 const AddTemplate: NextPage = () => {
-  const create = api.makeTemplate.useMutation();
+  const create = api.makeTemplate.useMutation({
+    onError() {
+      setButtonState(ButtonState.ERR);
+      setTimeout(() => setButtonState(ButtonState.NORM), 3000);
+    },
+    onSuccess() {
+      setButtonState(ButtonState.SUCCESS);
+      setTimeout(() => setButtonState(ButtonState.NORM), 3000);
+    },
+  });
   const getTemplatesQuery = api.getTemplates.useQuery();
   const templates = getTemplatesQuery.data;
 
-  const { register, handleSubmit } = useForm<Inputs>();
+  const [buttonState, setButtonState] = useState(ButtonState.NORM);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Inputs>();
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     if (!templates?.map((t) => t.name).includes(data.name))
@@ -32,36 +55,54 @@ const AddTemplate: NextPage = () => {
         className="flex flex-col items-end  gap-3 text-zinc-300"
       >
         {/* register your input into the hook by invoking the "register" function */}
-        <div className="flex flex-row">
-          <p className="">Template Name:</p>
-          <input
-            className="ml-2 border-2 border-solid border-zinc-300 bg-transparent"
-            {...register("name", { required: true })}
-          />
-        </div>
-        <div className="flex flex-row">
-          <p className="">Subject Line:</p>
-          <input
-            className="ml-2 border-2 border-solid border-zinc-300 bg-transparent"
-            {...register("subject", { required: true })}
-          />
-        </div>
-        <div className="flex flex-row">
-          <p className="">Template:</p>
-          <textarea
-            className="ml-2 border-2 border-solid border-zinc-300 bg-transparent"
-            {...register("fstring", { required: true })}
-          />
-        </div>
-        <p>{`{writer}: Your name, the writer of this email`}</p>
-        <p>
-          {`{position}: Your position, Sponsorship representative or director`}
-        </p>
-        <p>{`{companyName}: Name of the company you are emailing`}</p>
-        <p>{`{personName}: optional, if you have a specific person's name`}</p>
-        <p>Make sure its in html</p>
+        <Input
+          label="Template Name:"
+          errors={errors}
+          {...register("name", { required: true })}
+        />
+        <Input
+          label="Subject Line:"
+          errors={errors}
+          {...register("subject", { required: true })}
+        />
+        <Input
+          label="Template:"
+          errors={errors}
+          {...register("fstring", { required: true })}
+        />
 
-        <input type="submit" />
+        <div className="flex flex-col gap-3 rounded-lg border-2 p-5 pb-8">
+          <h3 className="text-lg font-bold">Template Key: </h3>
+          <p>
+            <strong>{"{writer}: "}</strong>The name of the writer
+          </p>
+          <p>
+            <strong>{"{position}: "}</strong>
+            The position of the writer, Sponsorship representative or director
+          </p>
+          <p>
+            <strong>{"{companyName}: "}</strong>The name of the company being
+            emailed
+          </p>
+          <p>
+            <strong>{"{personName}: "}</strong>Optional, if there is a specific
+            person&apos;s name
+          </p>
+          <p>Make sure it&apos;s in html!</p>
+        </div>
+
+        <input
+          type="submit"
+          className={`mt-5 w-full rounded-md  py-1 text-lg text-zinc-800 ${
+            buttonState === ButtonState.NORM
+              ? "bg-zinc-300"
+              : buttonState === ButtonState.SUCCESS
+              ? "bg-green-500"
+              : "bg-red-500"
+          }`}
+          disabled={buttonState !== ButtonState.NORM}
+          value={buttonState}
+        />
       </form>
     </Layout>
   );

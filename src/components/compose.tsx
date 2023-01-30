@@ -3,8 +3,6 @@ import { useForm, type SubmitHandler } from "react-hook-form";
 import { api } from "@utils/api";
 import { Input, Select } from "./input";
 import { useEffect, useState } from "react";
-import FormError from "./form-error";
-import { ErrorMessage } from "@hookform/error-message";
 import { useTitleCase } from "@utils/useTitleCase";
 
 enum Position {
@@ -123,6 +121,7 @@ const Compose: React.FC = () => {
       <Input
         label="Person's name (if applicable:"
         errors={errors}
+        optional
         {...register("personName")}
       />
 
