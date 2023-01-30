@@ -18,6 +18,7 @@ type Inputs = {
   companyName: string; // Formatting
   personName?: string; // Formatting
   email: string; // Email Send
+  ccTeam: boolean; // Email Send
   template: string; // To be formatted
 };
 
@@ -58,6 +59,7 @@ const Home: NextPage = () => {
     defaultValues: {
       position: Position.REP,
       template: "sponsor",
+      ccTeam: true,
     },
   });
 
@@ -65,10 +67,11 @@ const Home: NextPage = () => {
     setValue("writer", titlify(sessionData?.user?.name) ?? "");
   }, [sessionData?.user, setValue, titlify]);
 
-  console.log(watch("companyName"));
+  console.log(watch("ccTeam"));
+  console.log(errors);
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    console.log(errors);
+    console.log("Submit");
     const template = await templateQuery.mutateAsync({ name: data.template });
 
     if (template?.fstring) {
@@ -76,17 +79,19 @@ const Home: NextPage = () => {
         .replace("{personName}", titlify(data.personName) ?? data.companyName)
         .replaceAll(
           /{(.+?)}/g,
-          (_, key: string) => data[key.trim() as keyof Inputs] ?? ""
+          (_, key: string) => data[key.trim() as keyof Inputs]?.toString() ?? ""
         );
 
       setValue("email", "");
 
       submit.mutateAsync({
         to: data.email,
-        // cc: "team@techcodes.org",
         subject: template?.subject ?? "TechCodes Inquiry",
         text: "",
         html: message,
+        ...(data.ccTeam && {
+          cc: "team@techcodes.org",
+        }),
       });
     }
   };
@@ -157,6 +162,17 @@ const Home: NextPage = () => {
             </option>
           ))}
         </Select>
+        <div className="flex w-full flex-col">
+          <p>
+            CC team@techcodes.org?
+            <span className="font-bold text-red-400"> *</span>
+          </p>
+          <input
+            className="mt-2 mb-2 mr-auto  rounded-md border-2 border-solid border-zinc-300 bg-transparent p-1 outline-none"
+            type="checkbox"
+            {...register("ccTeam")}
+          />
+        </div>
         <hr className="w-full border border-zinc-300/20" />
 
         <input

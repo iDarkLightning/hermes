@@ -2,7 +2,7 @@ import type { NextPage } from "next";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { api } from "@utils/api";
 import Layout from "@components/layout";
-import { Input } from "@components/input";
+import { Input, TextField } from "@components/input";
 import { useState } from "react";
 
 type Inputs = {
@@ -36,23 +36,27 @@ const AddTemplate: NextPage = () => {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<Inputs>();
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    if (!templates?.map((t) => t.name).includes(data.name))
+    if (!templates?.map((t) => t.name).includes(data.name)) {
       await create.mutateAsync({
         fstring: data.fstring,
         name: data.name,
         subject: data.subject,
       });
+
+      setValue("name", "");
+    }
   };
 
   return (
     <Layout>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col items-end  gap-3 text-zinc-300"
+        className="flex flex-col items-end  gap-3 pb-20 text-zinc-300"
       >
         {/* register your input into the hook by invoking the "register" function */}
         <Input
@@ -65,7 +69,7 @@ const AddTemplate: NextPage = () => {
           errors={errors}
           {...register("subject", { required: true })}
         />
-        <Input
+        <TextField
           label="Template:"
           errors={errors}
           {...register("fstring", { required: true })}
