@@ -21,7 +21,6 @@ interface SelectProps extends InputHTMLAttributes<HTMLSelectElement> {
   optional?: boolean;
 }
 
-// eslint-disable-next-line react/display-name
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ label, errors, optional = false, name, ...rest }, ref) => {
     console.log(rest);
@@ -43,7 +42,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   }
 );
 
-// eslint-disable-next-line react/display-name
+Input.displayName = "Input";
+
 export const TextField = React.forwardRef<HTMLTextAreaElement, TextFieldProps>(
   ({ label, errors, optional = false, name, ...rest }, ref) => {
     console.log(rest);
@@ -65,7 +65,8 @@ export const TextField = React.forwardRef<HTMLTextAreaElement, TextFieldProps>(
   }
 );
 
-// eslint-disable-next-line react/display-name
+TextField.displayName = "TextField";
+
 export const Select = React.forwardRef<
   HTMLSelectElement,
   React.PropsWithChildren<SelectProps>
@@ -88,3 +89,5 @@ export const Select = React.forwardRef<
     </div>
   );
 });
+
+Select.displayName = "Select";

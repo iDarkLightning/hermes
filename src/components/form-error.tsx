@@ -13,8 +13,7 @@ const FormError: React.FC<{ errors: FieldErrors; name: string }> = ({
         render={({ messages }) => {
           console.log(name, "messages", messages);
           return messages
-            ? // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              Object.entries(messages).map(([_type, message], i) => (
+            ? Object.entries(messages).map(([, message], i) => (
                 <span key={i}>
                   {message}
                   <br />
