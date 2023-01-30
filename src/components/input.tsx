@@ -44,7 +44,10 @@ export const Select = React.forwardRef<
 >(({ label, errors, optional = false, children, name, ...rest }, ref) => {
   return (
     <div className="flex w-full flex-col">
-      <p>{label}</p>
+      <p>
+        {label}
+        {!optional && <span className="font-bold text-red-400"> *</span>}
+      </p>
       <select
         className="mt-2 mb-2 w-full rounded-md border-2 border-solid border-zinc-300 bg-transparent p-1 outline-none"
         ref={ref}
