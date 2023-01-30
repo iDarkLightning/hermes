@@ -2,9 +2,10 @@ import { useSession } from "next-auth/react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { api } from "@utils/api";
 import { Input, Select } from "./input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FormError from "./form-error";
 import { ErrorMessage } from "@hookform/error-message";
+import { useTitleCase } from "@utils/useTitleCase";
 
 enum Position {
   DIRECTOR = "the Director of Sponsorships",
@@ -21,7 +22,7 @@ type Inputs = {
 };
 
 enum ButtonState {
-  NORM = "Submit",
+  NORM = "Send",
   ERR = "Error! Check console for more info!",
   SUCCESS = "Sent Successfully!!",
 }
@@ -43,22 +44,26 @@ const Compose: React.FC = () => {
   const templates = getTemplatesQuery.data;
 
   const { data: sessionData } = useSession();
-
   const [buttonState, setButtonState] = useState(ButtonState.NORM);
+  const { titlify } = useTitleCase();
 
   const {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<Inputs>({
     criteriaMode: "all",
     defaultValues: {
-      personName: sessionData?.user?.name ?? "",
       position: Position.REP,
       template: "sponsor",
     },
   });
+
+  useEffect(() => {
+    setValue("writer", titlify(sessionData?.user?.name) ?? "");
+  }, [sessionData?.user, setValue, titlify]);
 
   console.log(watch("companyName"));
 
@@ -68,11 +73,13 @@ const Compose: React.FC = () => {
 
     if (template?.fstring) {
       const message = template?.fstring
-        .replace("{personName}", data.personName ?? data.companyName)
+        .replace("{personName}", titlify(data.personName) ?? data.companyName)
         .replaceAll(
           /{(.+?)}/g,
           (_, key: string) => data[key.trim() as keyof Inputs] ?? ""
         );
+
+      setValue("email", "");
 
       submit.mutateAsync({
         to: data.email,
@@ -124,7 +131,6 @@ const Compose: React.FC = () => {
       <Input
         label="Your Name: "
         errors={errors}
-        defaultValue={sessionData?.user?.name ?? ""}
         {...register("writer", { required: "What's your name?" })}
       />
       <Select
@@ -153,7 +159,14 @@ const Compose: React.FC = () => {
 
       <input
         type="submit"
-        className="mt-5 w-full rounded-md bg-zinc-300 py-1 text-lg text-zinc-800"
+        className={`mt-5 w-full rounded-md  py-1 text-lg text-zinc-800 ${
+          buttonState === ButtonState.NORM
+            ? "bg-zinc-300"
+            : buttonState === ButtonState.SUCCESS
+            ? "bg-green-500"
+            : "bg-red-500"
+        }`}
+        disabled={buttonState !== ButtonState.NORM}
         value={buttonState}
       />
     </form>
