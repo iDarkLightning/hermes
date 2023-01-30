@@ -1,16 +1,17 @@
 import type { InputHTMLAttributes } from "react";
 import React from "react";
 import FormError from "./form-error";
+import type { FieldErrors } from "react-hook-form";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
-  errors: any;
+  errors: FieldErrors;
   optional?: boolean;
 }
 
 interface SelectProps extends InputHTMLAttributes<HTMLSelectElement> {
   label: string;
-  errors: any;
+  errors: FieldErrors;
   optional?: boolean;
 }
 

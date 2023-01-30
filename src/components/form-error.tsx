@@ -1,6 +1,7 @@
 import { ErrorMessage } from "@hookform/error-message";
+import type { FieldErrors } from "react-hook-form";
 
-const FormError: React.FC<{ errors: any; name: string }> = ({
+const FormError: React.FC<{ errors: FieldErrors; name: string }> = ({
   errors,
   name,
 }) => {
