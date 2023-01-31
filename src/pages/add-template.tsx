@@ -4,6 +4,7 @@ import { api } from "@utils/api";
 import Layout from "@components/layout";
 import { Input, Textarea } from "@components/input";
 import { useState } from "react";
+import { useLeavePageConfirm } from "@utils/useLeavePageConfirm";
 
 type Inputs = {
   fstring: string;
@@ -37,6 +38,7 @@ const AddTemplate: NextPage = () => {
     register,
     handleSubmit,
     setValue,
+    getValues,
     formState: { errors },
   } = useForm<Inputs>();
 
@@ -51,6 +53,10 @@ const AddTemplate: NextPage = () => {
       setValue("name", "");
     }
   };
+
+  useLeavePageConfirm(getValues("fstring") !== "", () => {
+    return confirm('Warning! You have unsaved changes. Click "OK" to exit.');
+  });
 
   return (
     <Layout>
