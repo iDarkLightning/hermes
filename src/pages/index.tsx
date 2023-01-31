@@ -129,7 +129,7 @@ const Home: NextPage = () => {
           })}
         />
         <Input
-          label="Person's name (if applicable:"
+          label="Person's name (if applicable):"
           errors={errors}
           optional
           {...register("personName")}

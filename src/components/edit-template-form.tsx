@@ -16,6 +16,7 @@ export const EditTemplateForm: React.FC<{ template: Template }> = ({
 
   return (
     <form
+      className="pb-20 "
       onSubmit={form.handleSubmit((data) => {
         editTemplate.mutate({
           name: template.name,
@@ -39,7 +40,7 @@ export const EditTemplateForm: React.FC<{ template: Template }> = ({
 
       <button
         type="submit"
-        className="absolute mb-32 w-full rounded bg-green-700 py-8 px-20 text-9xl hover:bg-green-800"
+        className="mt-5 w-full rounded-md  bg-zinc-300 py-1 text-lg text-zinc-800"
       >
         Save
       </button>

@@ -38,6 +38,7 @@ const AddTemplate: NextPage = () => {
     register,
     handleSubmit,
     setValue,
+    watch,
     getValues,
     formState: { errors },
   } = useForm<Inputs>();
@@ -54,8 +55,22 @@ const AddTemplate: NextPage = () => {
     }
   };
 
-  useLeavePageConfirm(getValues("fstring") !== "", () => {
-    return confirm('Warning! You have unsaved changes. Click "OK" to exit.');
+  const checkMessageExists = (val: string) => {
+    console.log(val);
+    if (val === undefined) return false;
+    const matches = val.match(/\S/);
+    if (matches !== undefined && matches !== null) {
+      return matches.length > 0;
+    }
+    return false;
+  };
+
+  useLeavePageConfirm(checkMessageExists(watch("fstring")), () => {
+    console.log(getValues("fstring"));
+    return confirm(
+      'Warning! You have unsaved changes. Click "OK" to exit.' +
+        getValues("fstring")
+    );
   });
 
   return (
