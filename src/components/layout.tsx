@@ -39,7 +39,11 @@ const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
             </p>
           </div>
         </div>
-        {children}
+        {sessionData ? (
+          children
+        ) : (
+          <h1 className="mb-2 mt-auto mb-auto text-6xl font-bold">Sign in!</h1>
+        )}
       </main>
     </>
   );

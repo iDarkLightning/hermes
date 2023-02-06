@@ -17,7 +17,7 @@ const Lame: NextPage = () => {
         <h1 className="mb-2 text-2xl">
           You need to be a TechCodes Exec to use this app!
         </h1>
-        <p>If you are, use your TechCodes email</p>
+        <p>If you are, login with your TechCodes email</p>
 
         <button
           onClick={() => signIn("google", { callbackUrl: "/" })}
