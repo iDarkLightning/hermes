@@ -67,10 +67,7 @@ const AddTemplate: NextPage = () => {
 
   useLeavePageConfirm(checkMessageExists(watch("fstring")), () => {
     console.log(getValues("fstring"));
-    return confirm(
-      'Warning! You have unsaved changes. Click "OK" to exit.' +
-        getValues("fstring")
-    );
+    return confirm('Warning! You have unsaved changes. Click "OK" to exit.');
   });
 
   return (
