@@ -46,6 +46,8 @@ const Home: NextPage = () => {
 
   const { data: sessionData } = useSession();
   const [buttonState, setButtonState] = useState(ButtonState.NORM);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [emailMessage, setEmailMessage] = useState("");
   const { titlify } = useTitleCase();
 
   const {
@@ -53,6 +55,7 @@ const Home: NextPage = () => {
     handleSubmit,
     watch,
     setValue,
+    getValues,
     formState: { errors },
   } = useForm<Inputs>({
     criteriaMode: "all",
@@ -70,7 +73,28 @@ const Home: NextPage = () => {
   console.log(watch("ccTeam"));
   console.log(errors);
 
-  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+  const onSubmit: SubmitHandler<Inputs> = async () => {
+    setModalOpen(true);
+    const data = getValues();
+    console.log("Submit");
+    const template = await trpcContext.getTemplateByName.fetch({
+      name: data.template,
+    });
+
+    if (template?.fstring) {
+      const message = template?.fstring
+        .replace("{personName}", titlify(data.personName) ?? data.companyName)
+        .replaceAll(
+          /{(.+?)}/g,
+          (_, key: string) => data[key.trim() as keyof Inputs]?.toString() ?? ""
+        );
+
+      setEmailMessage(message);
+    }
+  };
+
+  const onSend = async () => {
+    const data = getValues();
     console.log("Submit");
     const template = await trpcContext.getTemplateByName.fetch({
       name: data.template,
@@ -96,10 +120,25 @@ const Home: NextPage = () => {
         }),
       });
     }
+    setModalOpen(false);
   };
 
   return (
     <Layout>
+      <div
+        className={`fixed mt-auto mb-auto block h-4/5 w-3/5 overflow-y-scroll rounded border bg-zinc-800 p-4 drop-shadow-[0_5px_10px_rgba(255,255,255,0.3)] ${
+          modalOpen ? "block" : "hidden"
+        }`}
+      >
+        <p dangerouslySetInnerHTML={{ __html: emailMessage }} />
+        <button
+          onClick={onSend}
+          className="mt-5 w-full rounded-md  bg-zinc-300 py-1 text-lg 
+            text-zinc-800"
+        >
+          Send!
+        </button>
+      </div>
       <form
         onSubmit={handleSubmit(onSubmit)}
         className=" flex w-3/5  flex-col items-start gap-3 pb-20 text-zinc-300"
