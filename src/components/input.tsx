@@ -22,10 +22,10 @@ interface SelectProps extends InputHTMLAttributes<HTMLSelectElement> {
 }
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ label, errors, optional = false, name, ...rest }, ref) => {
+  ({ label, errors, optional = false, className, name, ...rest }, ref) => {
     console.log(rest);
     return (
-      <div className="flex w-full flex-col">
+      <div className={`flex w-full flex-col ${className}`}>
         <p>
           {label}
           {!optional && <span className="font-bold text-red-400"> *</span>}

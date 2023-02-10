@@ -12,14 +12,16 @@ enum Position {
   REP = "a sponsorship representative",
 }
 
+// prettier-ignore
 type Inputs = {
-  writer: string; // Formatting
-  position: Position; // Formatting
-  companyName: string; // Formatting
-  personName?: string; // Formatting
-  email: string; // Email Send
-  ccTeam: boolean; // Email Send
-  template: string; // To be formatted
+  writer: string;       // Formatting
+  position: Position;   // Formatting
+  fullTitle?: string;   // Formatting
+  companyName: string;  // Formatting
+  personName?: string;  // Formatting
+  email: string;        // Email Send
+  ccTeam: boolean;      // Email Send
+  template: string;     // To be formatted
 };
 
 enum ButtonState {
@@ -73,10 +75,8 @@ const Home: NextPage = () => {
   console.log(watch("ccTeam"));
   console.log(errors);
 
-  const onSubmit: SubmitHandler<Inputs> = async () => {
-    setModalOpen(true);
+  const makeMessage = async () => {
     const data = getValues();
-    console.log("Submit");
     const template = await trpcContext.getTemplateByName.fetch({
       name: data.template,
     });
@@ -84,6 +84,12 @@ const Home: NextPage = () => {
     if (template?.fstring) {
       const message = template?.fstring
         .replace("{personName}", titlify(data.personName) ?? data.companyName)
+        .replace(
+          "{position}",
+          data.position === Position.DIRECTOR && data.fullTitle
+            ? data.fullTitle
+            : data.position
+        )
         .replaceAll(
           /{(.+?)}/g,
           (_, key: string) => data[key.trim() as keyof Inputs]?.toString() ?? ""
@@ -93,33 +99,33 @@ const Home: NextPage = () => {
     }
   };
 
+  const onSubmit: SubmitHandler<Inputs> = async () => {
+    setModalOpen(true);
+    makeMessage();
+  };
+
   const onSend = async () => {
     const data = getValues();
-    console.log("Submit");
     const template = await trpcContext.getTemplateByName.fetch({
       name: data.template,
     });
 
-    if (template?.fstring) {
-      const message = template?.fstring
-        .replace("{personName}", titlify(data.personName) ?? data.companyName)
-        .replaceAll(
-          /{(.+?)}/g,
-          (_, key: string) => data[key.trim() as keyof Inputs]?.toString() ?? ""
-        );
+    makeMessage();
 
+    if (emailMessage) {
       setValue("email", "");
 
       submit.mutateAsync({
         to: data.email,
         subject: template?.subject ?? "TechCodes Inquiry",
         text: "",
-        html: message,
+        html: emailMessage,
         ...(data.ccTeam && {
           cc: "team@techcodes.org",
         }),
       });
     }
+
     setModalOpen(false);
   };
 
@@ -190,6 +196,14 @@ const Home: NextPage = () => {
           <option value={Position.REP}>Representative</option>
           <option value={Position.DIRECTOR}>Director</option>
         </Select>
+        <Input
+          label="Full title (i.e. Director of Sponsorships): "
+          errors={errors}
+          className={
+            watch("position") === Position.DIRECTOR ? "block" : "hidden"
+          }
+          {...register("fullTitle")}
+        />
 
         <Select
           label="Template:"
